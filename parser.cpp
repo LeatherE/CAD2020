@@ -1,86 +1,221 @@
+#include "parser.hpp"
 #include <iostream> 
-#include <string> 
-#include <vector>
+
 using namespace std; 
 
-struct Gate
-{
-	string gate_type;
-	string gate_name;
-	string out;
-	vector<string> in;
-	struct Gate *fout;
-};
+Circuit::Circuit(){
+	cin>>tmp;
+	while (tmp != "input")
+		cin>>tmp;
+}	
 
-int main(){
-	string t;
-	
-	vector<Gate> gate_list;
-	vector<string> input;
-	vector<string> output;
-	vector<string> wire;
-	int i, j=0;
-	
-	cin>>t;
-	while(t != "input")
-		cin>>t;
-	while(t != ";") {
-		cin>>t;
-		if(t != "," && t != ";")
-			input.push_back(t);
+bool Circuit::IfAvailable(){
+	cin>>tmp;
+	return (tmp != "endmodule");
+}	
+
+void Circuit::GetInList(){
+		
+	while (tmp != "output") {
+		cin>>tmp;
+		if (tmp != "," && tmp != ";" && tmp != "output"){
+			/*if (tmp.front() == ",")
+				tmp.erase(tmp.begin());
+			if (tmp.back() == "," || tmp.back() == ";")
+				tmp.erase(tmp.end());*/
+			ModifyName();
+			InList.push_back(tmp);
+		}	
 	}
-	cin>>t;
-	while(t != ";") {
-		cin>>t;
-		if(t != "," && t != ";")
-			output.push_back(t);
+	//use do...while;
+}
+
+void Circuit::GetOutList(){
+
+	while (tmp != "wire") {
+		cin>>tmp;
+		if (tmp != "," && tmp != ";" && tmp != "wire"){
+			/*if (tmp.front() == ",")
+				tmp.erase(tmp.begin());
+			if (tmp.back() == "," || tmp.back() == ";")
+				tmp.erase(tmp.end());*/
+			ModifyName();
+			OutList.push_back(tmp);
+		}	
 	}
-	cin>>t;
-	while(t != ";") {
-		cin>>t;
-		if(t != "," && t != ";")
-			wire.push_back(t);
+	//use do...while;
+}
+
+void Circuit::GetWireList(){
+	
+	while (tmp != ";") { // need wire a, b, c ; space before ;
+		cin>>tmp;
+		if (tmp != "," && tmp != ";"){
+			/*if (tmp.front() == ",")
+				tmp.erase(tmp.begin());
+			if (tmp.back() == "," || tmp.back() == ";")
+				tmp.erase(tmp.end());*/
+			ModifyName();
+			WireList.push_back(tmp);
+		}	
 	}
+}
+
+void Circuit::GetGateList(){
+	Gate g;
 	
-	cout<<"input"<<endl;
-	for(i = 0; i < input.size(); i++)
-		cout<<input[i]<<" ";
-	cout<<endl;
-	cout<<"output"<<endl;
-	for(i = 0; i < output.size(); i++)
-		cout<<output[i]<<" ";
-	cout<<endl;
-	cout<<"wire"<<endl;
-	for(i = 0; i < wire.size(); i++)
-		cout<<wire[i]<<" ";
-	cout<<endl;
-	
-	cin>>t;
+	cin>>tmp;
 	do{
-		Gate g;
-		g.gate_type = t;
-		cin>>t;
-		g.gate_name = t;
-		cin>>t;				// skip (
-		cin>>t;
-		g.out = t;
-		while(t != ");") {
-			cin>>t;
-			if(t != "," && t != ");")
-				g.in.push_back(t);
-		}
-		gate_list.push_back(g);
-		cin>>t;
-	} while (t != "endmodule");
+		g = GetNextGate();
+		GateList.push_back(g);
+	} while (IfAvailable());
+
+}	
+
+void Circuit::PrintCircuit(){
+	int i, j;
 	
-	for(i = 0; i < gate_list.size(); i++){
-		cout<<gate_list[i].gate_type<<gate_list[i].gate_name<<endl;
-		cout<<"out "<<gate_list[i].out<<endl;
+	cout<<"input: "<<endl;
+	for(i = 0; i < InList.size(); i++)
+		cout<<InList[i]<<" ";
+	cout<<endl;
+	
+	cout<<"output: "<<endl;
+	for(i = 0; i < OutList.size(); i++)
+		cout<<OutList[i]<<" ";
+	cout<<endl;
+	
+	cout<<"wire: "<<endl;
+	for(i = 0; i < WireList.size(); i++)
+		cout<<WireList[i]<<" ";
+	cout<<endl;
+	
+	for(i = 0; i < GateList.size(); i++){
+		cout<<GateList[i].gate_type<<GateList[i].gate_name<<endl;
+		cout<<"out "<<GateList[i].out<<endl;
 		cout<<"in ";
-		for(j = 0; j < gate_list[i].in.size(); j++)
-			cout<<gate_list[i].in[j]<<" ";
+		for(j = 0; j < GateList[i].in.size(); j++)
+			cout<<GateList[i].in[j]<<" ";
+		cout<<endl;
+		cout<<"fout_adj_list: ";
+		for(j = 0; j < GateList[i].fout.size(); j++)
+			cout<<GateList[i].fout[j]<<" ";
 		cout<<endl;
 	}
 	
-	return 0;
+	
+	return;
 }
+
+void Circuit::BuildAdjList(){
+	int i, j, k;
+	string out_tmp;
+	
+	for(i = 0; i < GateList.size(); i++){
+		out_tmp = GateList[i].out;
+		if(i == 1)
+			cout<<out_tmp<<endl;
+		for(j = 0; j < GateList.size(); j++){
+			for(k = 0; k < GateList[j].in.size(); k++){
+				if(out_tmp == GateList[j].in[k]){
+					GateList[i].fout.push_back(j);
+					break;
+				}	
+			}	
+		}	
+	}
+}	
+
+void Circuit::topsort_Call(){
+	int i;
+	
+	top_order = new int[GateList.size()];
+	for (i = 0; i < GateList.size(); i++){
+		visit.push_back(false);
+	}
+	top_index = GateList.size() - 1;	
+	for (i = 0; i < GateList.size(); i++){	 
+		if (!visit[i])		
+			top_sort(i);
+	}
+	
+	cout<<"top order"<<endl;
+	for(i=0; i < GateList.size(); i++){
+		cout<<top_order[i]<<" ";
+	}
+	cout<<endl;
+}	
+	
+void Circuit::top_sort(int v){
+	int i = 0;
+	Gate g;
+	
+	visit[v] = 1;
+	
+	g = GateList[v];
+	while(i < g.fout.size()){
+		if (!visit[g.fout[i]])
+			top_sort(g.fout[i]);
+		i++;
+	}
+	
+	top_order[top_index--] = v;
+
+}
+
+void Circuit::ModifyName(){
+	if (tmp[0] == ',')
+		tmp.erase(tmp.begin());
+	if (tmp[tmp.size()-1] == ',' || tmp[tmp.size()-1] == ';')
+		tmp.erase(tmp.end());
+}	
+
+Gate Circuit::GetNextGate(){
+	Gate g;
+	
+	//cin>>tmp;
+	if (tmp == "and")
+		g.gate_type = AND_GATE;
+	else if (tmp == "or")
+		g.gate_type = OR_GATE;
+	else if (tmp == "nand")
+		g.gate_type = NAND_GATE;	
+	else if (tmp == "nor")
+		g.gate_type = NOR_GATE;
+	else if (tmp == "not")
+		g.gate_type = NOT_GATE;
+	else if (tmp == "buf")
+		g.gate_type = BUF_GATE;
+	else if (tmp == "xor")
+		g.gate_type = XOR_GATE;	
+	else if (tmp == "xnor")
+		g.gate_type = XNOR_GATE;
+	else if (tmp == "_DC")
+		g.gate_type = DC_GATE;
+	else if (tmp == "_HMUX")
+		g.gate_type = MUX_GATE;
+	
+	cin>>tmp;
+	g.gate_name = tmp;
+	cin>>tmp;				// skip (
+	cin>>tmp;
+	//ModifyName();
+	g.out = tmp;
+	while(tmp != ");") {
+		cin>>tmp;
+		if(tmp != "," && tmp != ");"){
+			//ModifyName();
+			g.in.push_back(tmp);
+		}
+	}
+	
+	return g;
+}
+
+/*string CircuitLoader::GetNextWire(){
+	string s;
+	
+	
+}*/
+
+
