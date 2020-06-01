@@ -64,6 +64,7 @@ void Circuit::GetWireList(){
 void Circuit::GetGateList(){
 	Gate g;
 	
+	num_of_xgate = 0;
 	cin>>tmp;
 	do{
 		g = GetNextGate();
@@ -97,7 +98,7 @@ void Circuit::PrintCircuit(){
 		for(j = 0; j < GateList[i].in.size(); j++)
 			cout<<GateList[i].in[j]<<" ";
 		cout<<endl;
-		cout<<"fout_adj_list: ";
+		cout<<"fout_adj_list(vector): ";
 		for(j = 0; j < GateList[i].fout.size(); j++)
 			cout<<GateList[i].fout[j]<<" ";
 		cout<<endl;
@@ -113,12 +114,18 @@ void Circuit::BuildAdjList(){
 	
 	for(i = 0; i < GateList.size(); i++){
 		out_tmp = GateList[i].out;
-		if(i == 1)
-			cout<<out_tmp<<endl;
+		//if(i == 1)
+		//	cout<<out_tmp<<endl;
 		for(j = 0; j < GateList.size(); j++){
 			for(k = 0; k < GateList[j].in.size(); k++){
 				if(out_tmp == GateList[j].in[k]){
 					GateList[i].fout.push_back(j);
+					/*if(!GateList[j].XGate)
+						GateList[i].fout_list.push_back(j);
+					else {
+						cout<<"Xgate: "<<GateList[j].gate_name<<endl;
+						GateList[i].fout_list.push_front(j);
+					}*/	
 					break;
 				}	
 			}	
@@ -126,9 +133,22 @@ void Circuit::BuildAdjList(){
 	}
 }	
 
+void Circuit::AddGate(Gate g){
+	GateList.push_back(g);
+}
+
+int Circuit::GetNumOfGate(){
+	return GateList.size();
+}
+
+Gate Circuit::GetGate(int v){
+	return GateList[v];
+}
+
 void Circuit::topsort_Call(){
-	int i;
+	int i, j = 0, first = 0;
 	
+	first_xgate = GateList.size();
 	top_order = new int[GateList.size()];
 	for (i = 0; i < GateList.size(); i++){
 		visit.push_back(false);
@@ -141,9 +161,15 @@ void Circuit::topsort_Call(){
 	
 	cout<<"top order"<<endl;
 	for(i=0; i < GateList.size(); i++){
-		cout<<top_order[i]<<" ";
+		//cout<<top_order[i]<<" ";
+		if(first == 0 && GateList[top_order[i]].XGate){
+			first = 1;
+			first_xgate = i;
+		}
 	}
 	cout<<endl;
+	cout<<"first_xgate= "<<first_xgate<<endl;
+	cout<<"first xgate = "<<GateList[top_order[first_xgate]].gate_name<<endl;
 }	
 	
 void Circuit::top_sort(int v){
@@ -158,9 +184,7 @@ void Circuit::top_sort(int v){
 			top_sort(g.fout[i]);
 		i++;
 	}
-	
 	top_order[top_index--] = v;
-
 }
 
 void Circuit::ModifyName(){
@@ -173,6 +197,7 @@ void Circuit::ModifyName(){
 Gate Circuit::GetNextGate(){
 	Gate g;
 	
+	g.XGate = false;
 	//cin>>tmp;
 	if (tmp == "and")
 		g.gate_type = AND_GATE;
@@ -190,8 +215,11 @@ Gate Circuit::GetNextGate(){
 		g.gate_type = XOR_GATE;	
 	else if (tmp == "xnor")
 		g.gate_type = XNOR_GATE;
-	else if (tmp == "_DC")
+	else if (tmp == "_DC"){
 		g.gate_type = DC_GATE;
+		g.XGate = true;
+		num_of_xgate++;
+	}
 	else if (tmp == "_HMUX")
 		g.gate_type = MUX_GATE;
 	
@@ -205,6 +233,10 @@ Gate Circuit::GetNextGate(){
 		cin>>tmp;
 		if(tmp != "," && tmp != ");"){
 			//ModifyName();
+			if(tmp == "1'bx" || tmp == "1'bX"){
+				g.XGate = true;
+				num_of_xgate++;
+			}
 			g.in.push_back(tmp);
 		}
 	}

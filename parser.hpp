@@ -17,12 +17,24 @@ class Circuit {
 	void GetGateList();
 	void PrintCircuit();
 	void BuildAdjList();
+	
+	void AddGate(Gate g);
+	
+	Gate GetGate(int v);
+	int GetNumOfGate();
+	
 	void topsort_Call();
 	void top_sort(int v);
+	int first_xgate;
+	int num_of_xgate;
+	
+	//void EncodeCircuit();
+	
 	int *top_order;
 
   private:
 	bool IfAvailable();
+	
 	//string GetNextWire();
 	void ModifyName();
 	Gate GetNextGate();
@@ -30,6 +42,9 @@ class Circuit {
 	vector<string> OutList;
 	vector<string> WireList;
 	vector<Gate> GateList;
+	
+	void AddEncoder();
+	
 	
 	vector<bool> visit;
 	int top_index;

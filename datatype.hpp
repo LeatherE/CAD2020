@@ -3,6 +3,7 @@
 
 #include <string> 
 #include <vector>
+#include <deque>
 using namespace std;
 
 enum GateType {
@@ -24,8 +25,9 @@ struct Gate
 	string gate_name;
 	string out;
 	vector<string> in;
-	//struct Gate *fout;
+	bool XGate;
 	vector<int> fout;
+	//deque<int>fout_list;
 };
 
 #endif
