@@ -14,7 +14,7 @@ bool Circuit::IfAvailable(){
 	return (tmp != "endmodule");
 }	
 
-void Circuit::GetInList(){
+void Circuit::ReadInList(){
 		
 	while (tmp != "output") {
 		cin>>tmp;
@@ -30,7 +30,7 @@ void Circuit::GetInList(){
 	//use do...while;
 }
 
-void Circuit::GetOutList(){
+void Circuit::ReadOutList(){
 
 	while (tmp != "wire") {
 		cin>>tmp;
@@ -46,7 +46,7 @@ void Circuit::GetOutList(){
 	//use do...while;
 }
 
-void Circuit::GetWireList(){
+void Circuit::ReadWireList(){
 	
 	while (tmp != ";") { // need wire a, b, c ; space before ;
 		cin>>tmp;
@@ -61,7 +61,7 @@ void Circuit::GetWireList(){
 	}
 }
 
-void Circuit::GetGateList(){
+void Circuit::ReadGateList(){
 	Gate g;
 	
 	num_of_xgate = 0;
