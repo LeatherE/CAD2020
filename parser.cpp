@@ -14,7 +14,7 @@ bool Circuit::IfAvailable(){
 	return (tmp != "endmodule");
 }	
 
-void Circuit::GetInList(){
+void Circuit::ReadInList(){
 		
 	while (tmp != "output") {
 		cin>>tmp;
@@ -30,7 +30,7 @@ void Circuit::GetInList(){
 	//use do...while;
 }
 
-void Circuit::GetOutList(){
+void Circuit::ReadOutList(){
 
 	while (tmp != "wire") {
 		cin>>tmp;
@@ -46,7 +46,7 @@ void Circuit::GetOutList(){
 	//use do...while;
 }
 
-void Circuit::GetWireList(){
+void Circuit::ReadWireList(){
 	
 	while (tmp != ";") { // need wire a, b, c ; space before ;
 		cin>>tmp;
@@ -61,13 +61,13 @@ void Circuit::GetWireList(){
 	}
 }
 
-void Circuit::GetGateList(){
+void Circuit::ReadGateList(){
 	Gate g;
 	
 	num_of_xgate = 0;
 	cin>>tmp;
 	do{
-		g = GetNextGate();
+		g = ReadNextGate();
 		GateList.push_back(g);
 	} while (IfAvailable());
 
@@ -145,6 +145,19 @@ Gate Circuit::GetGate(int v){
 	return GateList[v];
 }
 
+vector<string> Circuit::GetInList(){
+	return InList;
+}
+vector<string> Circuit::GetOutList(){
+	return OutList;
+}
+vector<string> Circuit::GetWireList(){
+	return WireList;
+}
+vector<Gate> Circuit::GetGateList(){
+	return GateList;
+}
+
 void Circuit::topsort_Call(){
 	int i, j = 0, first = 0;
 	
@@ -191,10 +204,10 @@ void Circuit::ModifyName(){
 	if (tmp[0] == ',')
 		tmp.erase(tmp.begin());
 	if (tmp[tmp.size()-1] == ',' || tmp[tmp.size()-1] == ';')
-		tmp.erase(tmp.end());
+		tmp.erase(tmp.end()-1);
 }	
 
-Gate Circuit::GetNextGate(){
+Gate Circuit::ReadNextGate(){
 	Gate g;
 	
 	g.XGate = false;
@@ -228,11 +241,19 @@ Gate Circuit::GetNextGate(){
 	cin>>tmp;				// skip (
 	cin>>tmp;
 	//ModifyName();
+	if (tmp.find(dot) !=std::string::npos){
+        
+        tmp.erase(tmp.end()-1);
+    	}
 	g.out = tmp;
 	while(tmp != ");") {
 		cin>>tmp;
 		if(tmp != "," && tmp != ");"){
 			//ModifyName();
+            if (tmp.find(dot) !=std::string::npos){
+                
+                tmp.erase(tmp.end()-1);
+            }
 			if(tmp == "1'bx" || tmp == "1'bX"){
 				g.XGate = true;
 				num_of_xgate++;
@@ -243,11 +264,3 @@ Gate Circuit::GetNextGate(){
 	
 	return g;
 }
-
-/*string CircuitLoader::GetNextWire(){
-	string s;
-	
-	
-}*/
-
-

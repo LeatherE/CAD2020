@@ -11,10 +11,10 @@ class Circuit {
     Circuit();
 	//~Circuit() = default;
 	
-	void GetInList();
-	void GetOutList();
-	void GetWireList();
-	void GetGateList();
+	void ReadInList();
+	void ReadOutList();
+	void ReadWireList();
+	void ReadGateList();
 	void PrintCircuit();
 	void BuildAdjList();
 	
@@ -22,6 +22,10 @@ class Circuit {
 	
 	Gate GetGate(int v);
 	int GetNumOfGate();
+	vector<string> GetInList();
+	vector<string> GetOutList();
+	vector<string> GetWireList();
+	vector<Gate> GetGateList();
 	
 	void topsort_Call();
 	void top_sort(int v);
@@ -35,9 +39,9 @@ class Circuit {
   private:
 	bool IfAvailable();
 	
-	//string GetNextWire();
+	
 	void ModifyName();
-	Gate GetNextGate();
+	Gate ReadNextGate();
 	vector<string> InList;
 	vector<string> OutList;
 	vector<string> WireList;
