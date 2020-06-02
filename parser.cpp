@@ -191,7 +191,7 @@ void Circuit::ModifyName(){
 	if (tmp[0] == ',')
 		tmp.erase(tmp.begin());
 	if (tmp[tmp.size()-1] == ',' || tmp[tmp.size()-1] == ';')
-		tmp.erase(tmp.end());
+		tmp.erase(tmp.end()-1);
 }	
 
 Gate Circuit::GetNextGate(){
@@ -228,11 +228,19 @@ Gate Circuit::GetNextGate(){
 	cin>>tmp;				// skip (
 	cin>>tmp;
 	//ModifyName();
+	if (tmp.find(dot) !=std::string::npos){
+        
+        tmp.erase(tmp.end()-1);
+    	}
 	g.out = tmp;
 	while(tmp != ");") {
 		cin>>tmp;
 		if(tmp != "," && tmp != ");"){
 			//ModifyName();
+            if (tmp.find(dot) !=std::string::npos){
+                
+                tmp.erase(tmp.end()-1);
+            }
 			if(tmp == "1'bx" || tmp == "1'bX"){
 				g.XGate = true;
 				num_of_xgate++;
