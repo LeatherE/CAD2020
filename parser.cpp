@@ -1,5 +1,6 @@
 #include "parser.hpp"
 #include <iostream> 
+
 const string dot = ",";
 using namespace std; 
 
@@ -19,10 +20,6 @@ void Circuit::ReadInList(){
 	while (tmp != "output") {
 		cin>>tmp;
 		if (tmp != "," && tmp != ";" && tmp != "output"){
-			/*if (tmp.front() == ",")
-				tmp.erase(tmp.begin());
-			if (tmp.back() == "," || tmp.back() == ";")
-				tmp.erase(tmp.end());*/
 			ModifyName();
 			InList.push_back(tmp);
 		}	
@@ -35,10 +32,6 @@ void Circuit::ReadOutList(){
 	while (tmp != "wire") {
 		cin>>tmp;
 		if (tmp != "," && tmp != ";" && tmp != "wire"){
-			/*if (tmp.front() == ",")
-				tmp.erase(tmp.begin());
-			if (tmp.back() == "," || tmp.back() == ";")
-				tmp.erase(tmp.end());*/
 			ModifyName();
 			OutList.push_back(tmp);
 		}	
@@ -51,10 +44,6 @@ void Circuit::ReadWireList(){
 	while (tmp != ";") { // need wire a, b, c ; space before ;
 		cin>>tmp;
 		if (tmp != "," && tmp != ";"){
-			/*if (tmp.front() == ",")
-				tmp.erase(tmp.begin());
-			if (tmp.back() == "," || tmp.back() == ";")
-				tmp.erase(tmp.end());*/
 			ModifyName();
 			WireList.push_back(tmp);
 		}	
@@ -120,12 +109,6 @@ void Circuit::BuildAdjList(){
 			for(k = 0; k < GateList[j].in.size(); k++){
 				if(out_tmp == GateList[j].in[k]){
 					GateList[i].fout.push_back(j);
-					/*if(!GateList[j].XGate)
-						GateList[i].fout_list.push_back(j);
-					else {
-						cout<<"Xgate: "<<GateList[j].gate_name<<endl;
-						GateList[i].fout_list.push_front(j);
-					}*/	
 					break;
 				}	
 			}	
@@ -172,17 +155,12 @@ void Circuit::topsort_Call(){
 			top_sort(i);
 	}
 	
-	cout<<"top order"<<endl;
 	for(i=0; i < GateList.size(); i++){
-		//cout<<top_order[i]<<" ";
 		if(first == 0 && GateList[top_order[i]].XGate){
 			first = 1;
 			first_xgate = i;
 		}
 	}
-	cout<<endl;
-	cout<<"first_xgate= "<<first_xgate<<endl;
-	cout<<"first xgate = "<<GateList[top_order[first_xgate]].gate_name<<endl;
 }	
 	
 void Circuit::top_sort(int v){
@@ -263,4 +241,6 @@ Gate Circuit::ReadNextGate(){
 	}
 	
 	return g;
+
 }
+
