@@ -1,6 +1,6 @@
 #include "parser.hpp"
 #include <iostream> 
-
+const string dot = ",";
 using namespace std; 
 
 Circuit::Circuit(){

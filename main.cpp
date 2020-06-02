@@ -11,10 +11,10 @@ int main(){
 	int i;
 	Circuit c;
 	
-	c.GetInList();
-	c.GetOutList();
-	c.GetWireList();
-	c.GetGateList();
+	c.ReadInList();
+	c.ReadOutList();
+	c.ReadWireList();
+	c.ReadGateList();
 	
 	c.BuildAdjList();
 	//c.PrintCircuit();
