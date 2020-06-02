@@ -11,10 +11,10 @@ class Circuit {
     Circuit();
 	//~Circuit() = default;
 	
-	void GetInList();
-	void GetOutList();
-	void GetWireList();
-	void GetGateList();
+	void ReadInList();
+	void ReadOutList();
+	void ReadWireList();
+	void ReadGateList();
 	void PrintCircuit();
 	void BuildAdjList();
 	
