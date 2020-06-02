@@ -1,5 +1,6 @@
 #include "parser.hpp"
 #include <iostream> 
+
 const string dot = ",";
 using namespace std; 
 
@@ -19,10 +20,6 @@ void Circuit::ReadInList(){
 	while (tmp != "output") {
 		cin>>tmp;
 		if (tmp != "," && tmp != ";" && tmp != "output"){
-			/*if (tmp.front() == ",")
-				tmp.erase(tmp.begin());
-			if (tmp.back() == "," || tmp.back() == ";")
-				tmp.erase(tmp.end());*/
 			ModifyName();
 			InList.push_back(tmp);
 		}	
@@ -35,10 +32,6 @@ void Circuit::ReadOutList(){
 	while (tmp != "wire") {
 		cin>>tmp;
 		if (tmp != "," && tmp != ";" && tmp != "wire"){
-			/*if (tmp.front() == ",")
-				tmp.erase(tmp.begin());
-			if (tmp.back() == "," || tmp.back() == ";")
-				tmp.erase(tmp.end());*/
 			ModifyName();
 			OutList.push_back(tmp);
 		}	
@@ -51,10 +44,6 @@ void Circuit::ReadWireList(){
 	while (tmp != ";") { // need wire a, b, c ; space before ;
 		cin>>tmp;
 		if (tmp != "," && tmp != ";"){
-			/*if (tmp.front() == ",")
-				tmp.erase(tmp.begin());
-			if (tmp.back() == "," || tmp.back() == ";")
-				tmp.erase(tmp.end());*/
 			ModifyName();
 			WireList.push_back(tmp);
 		}	
@@ -67,7 +56,7 @@ void Circuit::ReadGateList(){
 	num_of_xgate = 0;
 	cin>>tmp;
 	do{
-		g = GetNextGate();
+		g = ReadNextGate();
 		GateList.push_back(g);
 	} while (IfAvailable());
 
@@ -120,12 +109,6 @@ void Circuit::BuildAdjList(){
 			for(k = 0; k < GateList[j].in.size(); k++){
 				if(out_tmp == GateList[j].in[k]){
 					GateList[i].fout.push_back(j);
-					/*if(!GateList[j].XGate)
-						GateList[i].fout_list.push_back(j);
-					else {
-						cout<<"Xgate: "<<GateList[j].gate_name<<endl;
-						GateList[i].fout_list.push_front(j);
-					}*/	
 					break;
 				}	
 			}	
@@ -143,6 +126,19 @@ int Circuit::GetNumOfGate(){
 
 Gate Circuit::GetGate(int v){
 	return GateList[v];
+}
+
+vector<string> Circuit::GetInList(){
+	return InList;
+}
+vector<string> Circuit::GetOutList(){
+	return OutList;
+}
+vector<string> Circuit::GetWireList(){
+	return WireList;
+}
+vector<Gate> Circuit::GetGateList(){
+	return GateList;
 }
 
 void Circuit::topsort_Call(){
@@ -194,7 +190,7 @@ void Circuit::ModifyName(){
 		tmp.erase(tmp.end()-1);
 }	
 
-Gate Circuit::GetNextGate(){
+Gate Circuit::ReadNextGate(){
 	Gate g;
 	
 	g.XGate = false;
@@ -252,9 +248,249 @@ Gate Circuit::GetNextGate(){
 	return g;
 }
 
-/*string CircuitLoader::GetNextWire(){
-	string s;
+/*void Circuit::EncodeCircuit(){
+	int i, j;
+	int num_of_gate = GateList.size();
+	Gate g, g_tmp;
+		
+	for(i = 0; i < first_xgate; i++){
+		g = GateList[top_order[i]];
+		EncodeGate.push_back(g);
+		for(j = 0; j < g.fout.size(); j++){	// add encoder before xgate
+			g_tmp = GateList[g.fout[j]];
+			if(g_tmp.XGate){				// g_tmp need encode
+				AddEncoder(g);					// not complete
+				break;
+			}	
+		}	
+	}
 	
+	for(i = first_xgate; i < num_of_gate; i++){
+		g = GateList[top_order[i]];
+		switch(g.gate_type){
+			case AND_GATE:
+				if(g.in.size()>2)
+					EncodeMultiInput(g);
+				else
+					EncodeAND(g);
+				break;
+			case OR_GATE:
+				if(g.in.size()>2)
+					EncodeMultiInput(g);
+				else
+					EncodeOR(g);
+				break;
+			case NAND_GATE:
+				if(g.in.size()>2)
+					EncodeMultiInput(g);
+				else
+					EncodeNAND(g);
+				break;
+			case NOR_GATE:
+				if(g.in.size()>2)
+					EncodeMultiInput(g);
+				else
+					EncodeNOR(g);
+				break;
+			case NOT_GATE:
+				EncodeNOT(g);
+				break;
+			case BUF_GATE:
+				EncodeBUF(g);
+				break;
+			case XOR_GATE:
+				if(g.in.size()>2)
+					EncodeMultiInput(g);
+				else
+					EncodeXOR(g);
+				break;
+			case XNOR_GATE:
+				if(g.in.size()>2)
+					EncodeMultiInput(g);
+				else
+					EncodeXNOR(g);
+				break;
+			case DC_GATE:
+				EncodeDC(g);
+				break;
+			case MUX_GATE:
+				EncodeMUX(g);
+				break;
+		}	
+	}
+}
+
+void Circuit::AddEncoder(Gate g){
+	
+}
+
+void Circuit::EncodeMultiInput(Gate g){
+	Gate new_gate;
+	string s;
+	int i = 1;
+	
+	switch(g.gate_type){
+		case AND_GATE:
+			while(g.in.size() >= 2){
+				//s = to_string(i++);
+				new_gate.gate_type = AND_GATE;
+				new_gate.gate_name = g.gate_name + "_t";
+				//new_gate.gate_name = g.gate_name + "_" + s;
+				if(g.in.size() == 2)
+					new_gate.out = g.out;
+				else
+					new_gate.out = g.out + "_w" + s;
+				EncodeWire.push_back(new_gate.out);
+				new_gate.in.push_back(g.in.back());
+				g.in.pop_back();
+				new_gate.in.push_back(g.in.back());
+				g.in.pop_back();
+				g.in.push_back(new_gate.out);
+				EncodeAND(new_gate);
+			}	
+			break;
+		case OR_GATE:
+			while(g.in.size() >= 2){
+				//s = to_string(i++);
+				new_gate.gate_type = OR_GATE;
+				new_gate.gate_name = g.gate_name + "_" + s;
+				if(g.in.size() == 2)
+					new_gate.out = g.out;
+				else
+					new_gate.out = g.out + "_w" + s;
+				EncodeWire.push_back(new_gate.out);
+				new_gate.in.push_back(g.in.back());
+				g.in.pop_back();
+				new_gate.in.push_back(g.in.back());
+				g.in.pop_back();
+				g.in.push_back(new_gate.out);
+				EncodeOR(new_gate);
+			}
+			break;
+		case NAND_GATE:
+			while(g.in.size() >= 2){
+				//s = to_string(i++);
+				new_gate.gate_type = NAND_GATE;
+				new_gate.gate_name = g.gate_name + "_" + s;
+				if(g.in.size() == 2)
+					new_gate.out = g.out;
+				else
+					new_gate.out = g.out + "_w" + s;
+				EncodeWire.push_back(new_gate.out);
+				new_gate.in.push_back(g.in.back());
+				g.in.pop_back();
+				new_gate.in.push_back(g.in.back());
+				g.in.pop_back();
+				g.in.push_back(new_gate.out);
+				EncodeNAND(new_gate);
+			}
+			break;
+		case NOR_GATE:
+			while(g.in.size() >= 2){
+				//s = to_string(i++);
+				new_gate.gate_type = NOR_GATE;
+				new_gate.gate_name = g.gate_name + "_" + s;
+				if(g.in.size() == 2)
+					new_gate.out = g.out;
+				else
+					new_gate.out = g.out + "_w" + s;
+				EncodeWire.push_back(new_gate.out);
+				new_gate.in.push_back(g.in.back());
+				g.in.pop_back();
+				new_gate.in.push_back(g.in.back());
+				g.in.pop_back();
+				g.in.push_back(new_gate.out);
+				EncodeNOR(new_gate);
+			}
+			break;
+		case XOR_GATE:
+			while(g.in.size() >= 2){
+				//s = to_string(i++);
+				new_gate.gate_type = XOR_GATE;
+				new_gate.gate_name = g.gate_name + "_" + s;
+				if(g.in.size() == 2)
+					new_gate.out = g.out;
+				else
+					new_gate.out = g.out + "_w" + s;
+				EncodeWire.push_back(new_gate.out);
+				new_gate.in.push_back(g.in.back());
+				g.in.pop_back();
+				new_gate.in.push_back(g.in.back());
+				g.in.pop_back();
+				g.in.push_back(new_gate.out);
+				EncodeXOR(new_gate);
+			}
+			break;
+		case XNOR_GATE:
+			while(g.in.size() >= 2){
+				//s = to_string(i++);
+				new_gate.gate_type = XNOR_GATE;
+				new_gate.gate_name = g.gate_name + "_" + s;
+				if(g.in.size() == 2)
+					new_gate.out = g.out;
+				else
+					new_gate.out = g.out + "_w" + s;
+				EncodeWire.push_back(new_gate.out);
+				new_gate.in.push_back(g.in.back());
+				g.in.pop_back();
+				new_gate.in.push_back(g.in.back());
+				g.in.pop_back();
+				g.in.push_back(new_gate.out);
+				EncodeXNOR(new_gate);
+			}
+			break;
+	}
+}
+
+void Circuit::EncodeAND(Gate g){
+	Gate and1, and0;
+	
+	and1.gate_type = AND_GATE;
+	and1.gate_name = g.gate_name + "_1";
+	and1.out = g.out + "_1";
+	EncodeWire.push_back(and1.out);
+	and1.in.push_back(g.in[0] + "_1");
+	and1.in.push_back(g.in[1] + "_1");
+	EncodeGate.push_back(and1);
+		
+	and0.gate_type = OR_GATE;	
+	and0.gate_name = g.gate_name + "_0";
+	and0.out = g.out + "_0";
+	EncodeWire.push_back(and0.out);
+	and0.in.push_back(g.in[0] + "_0");
+	and0.in.push_back(g.in[1] + "_0");
+	EncodeGate.push_back(and0);
+	cout<<"777"<<endl;
+}
+
+
+void Circuit::EncodeOR(Gate g){
+	
+}
+void Circuit::EncodeNAND(Gate g){
+	
+}
+void Circuit::EncodeNOR(Gate g){
+	
+}
+void Circuit::EncodeNOT(Gate g){
+	
+}
+void Circuit::EncodeBUF(Gate g){
+	
+}
+void Circuit::EncodeXOR(Gate g){
+	
+}
+
+void Circuit::EncodeXNOR(Gate g){
+	
+}
+void Circuit::EncodeDC(Gate g){
+	
+}
+
+void Circuit::EncodeMUX(Gate g){
 	
 }*/
 
