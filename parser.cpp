@@ -101,10 +101,10 @@ void Circuit::PrintCircuit(){
 		for(j = 0; j < GateList[i].in.size(); j++)
 			cout<<GateList[i].in[j]<<" ";
 		cout<<endl;
-		cout<<"fout_adj_list(vector): ";
+		/*cout<<"fout_adj_list(vector): ";
 		for(j = 0; j < GateList[i].fout.size(); j++)
 			cout<<GateList[i].fout[j]<<" ";
-		cout<<endl;
+		cout<<endl;*/
 	}
 	
 	
@@ -201,6 +201,8 @@ void Circuit::ModifyName(){
 
 Gate Circuit::ReadNextGate(){
 	Gate g;
+	char c;
+	int i = 0;
 	
 	g.XGate = false;
 	//cin>>tmp;
@@ -230,8 +232,34 @@ Gate Circuit::ReadNextGate(){
 	
 	cin>>tmp;
 	g.gate_name = tmp;
+	
+	//c = cin.get();		// skip ' '
 	cin>>tmp;				// skip (
-	cin>>tmp;
+	tmp.clear();
+	do{
+		c = cin.get();
+		if(c == ';'){
+			break;
+		}else if(c == ',' || c == ')'){
+			if(tmp == "1'bx" || tmp == "1'bX"){
+				g.XGate = true;
+				num_of_xgate++;
+			}
+			if(i==0)
+				g.out = tmp;
+			else
+				g.in.push_back(tmp);
+			//cout<<tmp<<endl;
+			tmp.clear();
+			i++;
+		}else if(c != ' '){
+			tmp.push_back(c);
+		}
+	}while(true);
+	c = cin.get();		// skip '\n'
+	
+	//cin>>tmp;				// skip (
+	/*cin>>tmp;
 	//ModifyName();
 	if (tmp.find(dot) !=std::string::npos){
         
@@ -252,7 +280,7 @@ Gate Circuit::ReadNextGate(){
 			}
 			g.in.push_back(tmp);
 		}
-	}
+	}*/
 	
 	return g;
 
