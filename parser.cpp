@@ -2,6 +2,7 @@
 #include <iostream> 
 
 const string dot = ",";
+const string semi = ";";
 using namespace std; 
 
 Circuit::Circuit(){
@@ -25,9 +26,14 @@ void Circuit::ReadInList(){
                 		if(tmp.find(dot)>0)InList.push_back(tmp.substr(0, tmp.find(dot)));
                 		tmp.erase(0, tmp.find(dot)+1);
             		}
-            		if(tmp.size()>0)InList.push_back(tmp);
-            
-			
+            		if(tmp.size()>0){
+                
+                		if(tmp.find(semi) !=std::string::npos){
+                    
+                    			InList.push_back(tmp.substr(0, tmp.size()-1));
+                		}
+                		else InList.push_back(tmp);
+            		}
 		}	
 	}
 	//use do...while;
@@ -43,7 +49,14 @@ void Circuit::ReadOutList(){
                 		if(tmp.find(dot)>0)OutList.push_back(tmp.substr(0, tmp.find(dot)));
                	 		tmp.erase(0, tmp.find(dot)+1);
             		}
-            		if(tmp.size()>0)OutList.push_back(tmp);
+            		if(tmp.size()>0){
+                
+                		if(tmp.find(semi) !=std::string::npos){
+                    
+                    			OutList.push_back(tmp.substr(0, tmp.size()-1));
+               			}
+                		else OutList.push_back(tmp);
+            		}
 		}	
 	}
 	//use do...while;
@@ -59,7 +72,14 @@ void Circuit::ReadWireList(){
                 		if(tmp.find(dot)>0)WireList.push_back(tmp.substr(0, tmp.find(dot)));
                 		tmp.erase(0, tmp.find(dot)+1);
             		}
-            		if(tmp.size()>0)WireList.push_back(tmp);
+            		if(tmp.size()>0){
+                
+                		if(tmp.find(semi) !=std::string::npos){
+                    
+                    			WireList.push_back(tmp.substr(0, tmp.size()-1));
+                		}
+                		else WireList.push_back(tmp);
+            		}
 		}	
 	}
 }
