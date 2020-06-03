@@ -65,7 +65,6 @@ void Circuit::ReadWireList(){
 		cin>>tmp;
 		if (tmp != "," && tmp != ";"){
 			while (tmp.find(dot) !=std::string::npos){
-                
                 if(tmp.find(dot)>0)WireList.push_back(tmp.substr(0, tmp.find(dot)));
                 tmp.erase(0, tmp.find(dot)+1);
             }
@@ -247,7 +246,6 @@ Gate Circuit::ReadNextGate(){
 	else if (tmp == "_HMUX")
 		g.gate_type = MUX_GATE;
 	
-	
 	tmp.clear();
 	do{
 		c = cin.get();
@@ -258,7 +256,6 @@ Gate Circuit::ReadNextGate(){
 			tmp.push_back(c);
 		}
 	}while(true);
-	
 	
 	tmp.clear();
 	do{
@@ -282,14 +279,13 @@ Gate Circuit::ReadNextGate(){
 				num_of_xgate++;
 			}
 			g.in.push_back(tmp);
-			//cout<<tmp<<endl;
 			tmp.clear();
 		}else if(c != ' '){
 			tmp.push_back(c);
 		}
 	}while(true);
 	c = cin.get();		// skip '\n'
-	
+
 	return g;
 
 }

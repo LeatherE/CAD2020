@@ -97,7 +97,11 @@ void Encoder::EncodeCircuit(){
 
 void Encoder::PrintResult(){
 	int i, j;
+<<<<<<< HEAD
 	cout<<"module top( ";
+=======
+	cout<<"module encode( ";
+>>>>>>> 5e3efc90e11b1346a3da4822db2f07e3de9ee9c6
 	j = 0;
 	for(i = 0; i < TargetIn.size(); i++, j++){
 		cout<<TargetIn[i]<<" , ";
@@ -168,7 +172,11 @@ void Encoder::PrintResult(){
 				cout<<"xnor ";
 				break;
 		}
+<<<<<<< HEAD
 		//cout<<ResultGate[i].gate_name<<" ";
+=======
+		cout<<ResultGate[i].gate_name<<" ";
+>>>>>>> 5e3efc90e11b1346a3da4822db2f07e3de9ee9c6
 		cout<<"( "<<ResultGate[i].out<<" , ";
 		for(j = 0; j < ResultGate[i].in.size() - 1; j++){
 			cout<<ResultGate[i].in[j]<<" , ";
