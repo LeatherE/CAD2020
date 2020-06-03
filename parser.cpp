@@ -20,8 +20,14 @@ void Circuit::ReadInList(){
 	while (tmp != "output") {
 		cin>>tmp;
 		if (tmp != "," && tmp != ";" && tmp != "output"){
-			ModifyName();
-			InList.push_back(tmp);
+            		while (tmp.find(dot) !=std::string::npos){
+                
+                		if(tmp.find(dot)>0)InList.push_back(tmp.substr(0, tmp.find(dot)));
+                		tmp.erase(0, tmp.find(dot)+1);
+            		}
+            		if(tmp.size()>0)InList.push_back(tmp);
+            
+			
 		}	
 	}
 	//use do...while;
@@ -32,8 +38,12 @@ void Circuit::ReadOutList(){
 	while (tmp != "wire") {
 		cin>>tmp;
 		if (tmp != "," && tmp != ";" && tmp != "wire"){
-			ModifyName();
-			OutList.push_back(tmp);
+			while (tmp.find(dot) !=std::string::npos){
+                
+                		if(tmp.find(dot)>0)OutList.push_back(tmp.substr(0, tmp.find(dot)));
+               	 		tmp.erase(0, tmp.find(dot)+1);
+            		}
+            		if(tmp.size()>0)OutList.push_back(tmp);
 		}	
 	}
 	//use do...while;
@@ -44,8 +54,12 @@ void Circuit::ReadWireList(){
 	while (tmp != ";") { // need wire a, b, c ; space before ;
 		cin>>tmp;
 		if (tmp != "," && tmp != ";"){
-			ModifyName();
-			WireList.push_back(tmp);
+			while (tmp.find(dot) !=std::string::npos){
+                
+                		if(tmp.find(dot)>0)WireList.push_back(tmp.substr(0, tmp.find(dot)));
+                		tmp.erase(0, tmp.find(dot)+1);
+            		}
+            		if(tmp.size()>0)WireList.push_back(tmp);
 		}	
 	}
 }
