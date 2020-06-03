@@ -2,6 +2,7 @@
 #include <iostream> 
 
 const string dot = ",";
+const string semi = ";";
 using namespace std; 
 
 Circuit::Circuit(){
@@ -25,9 +26,14 @@ void Circuit::ReadInList(){
                 		if(tmp.find(dot)>0)InList.push_back(tmp.substr(0, tmp.find(dot)));
                 		tmp.erase(0, tmp.find(dot)+1);
             		}
-            		if(tmp.size()>0)InList.push_back(tmp);
-            
-			
+            		if(tmp.size()>0){
+                
+                		if(tmp.find(semi) !=std::string::npos){
+                    
+                    			InList.push_back(tmp.substr(0, tmp.size()-1));
+                		}
+                		else InList.push_back(tmp);
+            		}
 		}	
 	}
 	//use do...while;
@@ -39,11 +45,15 @@ void Circuit::ReadOutList(){
 		cin>>tmp;
 		if (tmp != "," && tmp != ";" && tmp != "wire"){
 			while (tmp.find(dot) !=std::string::npos){
-                
-                		if(tmp.find(dot)>0)OutList.push_back(tmp.substr(0, tmp.find(dot)));
-               	 		tmp.erase(0, tmp.find(dot)+1);
-            		}
-            		if(tmp.size()>0)OutList.push_back(tmp);
+                if(tmp.find(dot)>0)OutList.push_back(tmp.substr(0, tmp.find(dot)));
+               	tmp.erase(0, tmp.find(dot)+1);
+            }
+            if(tmp.size()>0){
+                if(tmp.find(semi) !=std::string::npos){
+                    OutList.push_back(tmp.substr(0, tmp.size()-1));
+               	}
+                else OutList.push_back(tmp);
+            }
 		}	
 	}
 	//use do...while;
@@ -56,10 +66,17 @@ void Circuit::ReadWireList(){
 		if (tmp != "," && tmp != ";"){
 			while (tmp.find(dot) !=std::string::npos){
                 
-                		if(tmp.find(dot)>0)WireList.push_back(tmp.substr(0, tmp.find(dot)));
-                		tmp.erase(0, tmp.find(dot)+1);
-            		}
-            		if(tmp.size()>0)WireList.push_back(tmp);
+                if(tmp.find(dot)>0)WireList.push_back(tmp.substr(0, tmp.find(dot)));
+                tmp.erase(0, tmp.find(dot)+1);
+            }
+            if(tmp.size()>0){
+
+                if(tmp.find(semi) !=std::string::npos){
+
+                  		WireList.push_back(tmp.substr(0, tmp.size()-1));
+                }
+                else WireList.push_back(tmp);
+			}
 		}	
 	}
 }
@@ -91,7 +108,7 @@ void Circuit::PrintCircuit(){
 	
 	cout<<"wire: "<<endl;
 	for(i = 0; i < WireList.size(); i++)
-		cout<<WireList[i]<<" ";
+		cout<<WireList[i]<<" , ";
 	cout<<endl;
 	
 	for(i = 0; i < GateList.size(); i++){
@@ -101,10 +118,10 @@ void Circuit::PrintCircuit(){
 		for(j = 0; j < GateList[i].in.size(); j++)
 			cout<<GateList[i].in[j]<<" ";
 		cout<<endl;
-		cout<<"fout_adj_list(vector): ";
+		/*cout<<"fout_adj_list(vector): ";
 		for(j = 0; j < GateList[i].fout.size(); j++)
 			cout<<GateList[i].fout[j]<<" ";
-		cout<<endl;
+		cout<<endl;*/
 	}
 	
 	
@@ -201,6 +218,8 @@ void Circuit::ModifyName(){
 
 Gate Circuit::ReadNextGate(){
 	Gate g;
+	char c;
+	int i = 0;
 	
 	g.XGate = false;
 	//cin>>tmp;
@@ -228,31 +247,48 @@ Gate Circuit::ReadNextGate(){
 	else if (tmp == "_HMUX")
 		g.gate_type = MUX_GATE;
 	
-	cin>>tmp;
-	g.gate_name = tmp;
-	cin>>tmp;				// skip (
-	cin>>tmp;
-	//ModifyName();
-	if (tmp.find(dot) !=std::string::npos){
-        
-        tmp.erase(tmp.end()-1);
-    	}
-	g.out = tmp;
-	while(tmp != ");") {
-		cin>>tmp;
-		if(tmp != "," && tmp != ");"){
-			//ModifyName();
-            if (tmp.find(dot) !=std::string::npos){
-                
-                tmp.erase(tmp.end()-1);
-            }
+	
+	tmp.clear();
+	do{
+		c = cin.get();
+		if(c == '('){
+			g.gate_name = tmp;
+			break;
+		}else if(c != ' '){
+			tmp.push_back(c);
+		}
+	}while(true);
+	
+	
+	tmp.clear();
+	do{
+		c = cin.get();
+		if(c == ','){
+			g.out = tmp;
+			break;
+		}else if(c != ' '){
+			tmp.push_back(c);
+		}
+	}while(true);
+	
+	tmp.clear();
+	do{
+		c = cin.get();
+		if(c == ';'){
+			break;
+		}else if(c == ',' || c == ')'){
 			if(tmp == "1'bx" || tmp == "1'bX"){
 				g.XGate = true;
 				num_of_xgate++;
 			}
 			g.in.push_back(tmp);
+			//cout<<tmp<<endl;
+			tmp.clear();
+		}else if(c != ' '){
+			tmp.push_back(c);
 		}
-	}
+	}while(true);
+	c = cin.get();		// skip '\n'
 	
 	return g;
 

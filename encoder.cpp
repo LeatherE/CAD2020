@@ -97,18 +97,25 @@ void Encoder::EncodeCircuit(){
 
 void Encoder::PrintResult(){
 	int i, j;
-	cout<<"module encode( ";
-	for(i = 0; i < TargetIn.size(); i++){
+	cout<<"module top( ";
+	j = 0;
+	for(i = 0; i < TargetIn.size(); i++, j++){
 		cout<<TargetIn[i]<<" , ";
+		if(j%7 == 6)
+			cout<<endl;
 	}
-	for(i = 0; i < ResultOut.size()-1; i++){
+	for(i = 0; i < ResultOut.size()-1; i++, j++){
 		cout<<ResultOut[i]<<" , ";
+		if(j%7 == 6)
+			cout<<endl;
 	}
 	cout<<ResultOut.back()<<" );"<<endl;
 	
 	cout<<"input ";
 	for(i = 0; i < TargetIn.size()-1; i++){
 		cout<<TargetIn[i]<<" , ";
+		if(i%7 == 6)
+			cout<<endl;
 	}
 	cout<<TargetIn.back()<<" ;"<<endl;
 	
@@ -116,6 +123,8 @@ void Encoder::PrintResult(){
 	if(ResultOut.size()>0){
 		for(i = 0; i < ResultOut.size()-1; i++){
 			cout<<ResultOut[i]<<" , ";
+			if(i%7 == 6)
+				cout<<endl;
 		}
 		cout<<ResultOut.back();
 	}
@@ -125,6 +134,8 @@ void Encoder::PrintResult(){
 	if(ResultWire.size()>0){
 		for(i = 0; i < ResultWire.size()-1; i++){
 			cout<<ResultWire[i]<<" , ";
+			if(i%7 == 6)
+				cout<<endl;
 		}
 		cout<<ResultWire.back();
 	}
@@ -157,10 +168,10 @@ void Encoder::PrintResult(){
 				cout<<"xnor ";
 				break;
 		}
-		cout<<ResultGate[i].gate_name<<" ";
-		cout<<"( "<<ResultGate[i].out<<" ,";
+		//cout<<ResultGate[i].gate_name<<" ";
+		cout<<"( "<<ResultGate[i].out<<" , ";
 		for(j = 0; j < ResultGate[i].in.size() - 1; j++){
-			cout<<ResultGate[i].in[j]<<" ,";
+			cout<<ResultGate[i].in[j]<<" , ";
 		}
 		cout<<ResultGate[i].in.back()<<" );"<<endl;
 	}
@@ -332,6 +343,7 @@ void Encoder::EncodeConstantInput(Gate g){
 		in10 = g.in[1] + "_0";
 	}
 }
+
 void Encoder::EncodeAND(Gate g){
 	Gate and1, and0;
 		
