@@ -17,7 +17,21 @@ Encoder::Encoder(vector<string> Tinput, vector<string> Toutput, vector<Gate> Tga
 void Encoder::EncodeCircuit(){
 	int i, j, k;
 	Gate g, g_tmp;
-		
+	
+	for(i = 0; i < TargetIn.size(); i++){
+		for(j = XFlag; j < TargetGate.size(); j++){
+			g = TargetGate[top_order[j]];
+			if(find(g.in.begin(), g.in.end(), TargetIn[i]) != g.in.end()){
+				Gate en_Input;
+				en_Input.out = TargetIn[i];
+				en_Input.gate_name = TargetIn[i];
+				AddEncoder(en_Input);
+				break;
+			}
+			
+		}
+	}
+	
 	for(i = 0; i < XFlag ; i++){
 		g = TargetGate[top_order[i]];
 		ResultGate.push_back(g);
@@ -97,11 +111,7 @@ void Encoder::EncodeCircuit(){
 
 void Encoder::PrintResult(){
 	int i, j;
-<<<<<<< HEAD
 	cout<<"module top( ";
-=======
-	cout<<"module encode( ";
->>>>>>> 5e3efc90e11b1346a3da4822db2f07e3de9ee9c6
 	j = 0;
 	for(i = 0; i < TargetIn.size(); i++, j++){
 		cout<<TargetIn[i]<<" , ";
@@ -172,11 +182,7 @@ void Encoder::PrintResult(){
 				cout<<"xnor ";
 				break;
 		}
-<<<<<<< HEAD
 		//cout<<ResultGate[i].gate_name<<" ";
-=======
-		cout<<ResultGate[i].gate_name<<" ";
->>>>>>> 5e3efc90e11b1346a3da4822db2f07e3de9ee9c6
 		cout<<"( "<<ResultGate[i].out<<" , ";
 		for(j = 0; j < ResultGate[i].in.size() - 1; j++){
 			cout<<ResultGate[i].in[j]<<" , ";
@@ -323,6 +329,7 @@ void Encoder::EncodeMultiInput(Gate g){
 			break;
 	}
 }
+
 void Encoder::EncodeConstantInput(Gate g){
 	if(g.in[0] == "1'b0"){
 		in01 = "1'b0";
@@ -356,7 +363,7 @@ void Encoder::EncodeAND(Gate g){
 	Gate and1, and0;
 		
 	EncodeConstantInput(g);
-	if(find(TargetIn.begin(), TargetIn.end(), g.in[0]) != TargetIn.end()){
+	/*if(find(TargetIn.begin(), TargetIn.end(), g.in[0]) != TargetIn.end()){
 		Gate en_Input;
 		en_Input.out = g.in[0];
 		en_Input.gate_name = g.in[0];
@@ -368,7 +375,7 @@ void Encoder::EncodeAND(Gate g){
 		en_Input.out = g.in[1];
 		en_Input.gate_name = g.in[1];
 		AddEncoder(en_Input);
-	}
+	}*/
 
 	and1.gate_type = AND_GATE;
 	and1.gate_name = g.gate_name + "_1";
@@ -399,7 +406,7 @@ void Encoder::EncodeOR(Gate g){
 	Gate or1, or0;
 	
 	EncodeConstantInput(g);
-	if(find(TargetIn.begin(), TargetIn.end(), g.in[0]) != TargetIn.end()){
+	/*if(find(TargetIn.begin(), TargetIn.end(), g.in[0]) != TargetIn.end()){
 		Gate en_Input;
 		en_Input.out = g.in[0];
 		en_Input.gate_name = g.in[0];
@@ -411,7 +418,7 @@ void Encoder::EncodeOR(Gate g){
 		en_Input.out = g.in[1];
 		en_Input.gate_name = g.in[1];
 		AddEncoder(en_Input);
-	}
+	}*/
 
 	or1.gate_type = OR_GATE;
 	or1.gate_name = g.gate_name + "_1";
@@ -441,7 +448,7 @@ void Encoder::EncodeNAND(Gate g){
 	Gate nand1, nand0;
 	
 	EncodeConstantInput(g);
-	if(find(TargetIn.begin(), TargetIn.end(), g.in[0]) != TargetIn.end()){
+	/*if(find(TargetIn.begin(), TargetIn.end(), g.in[0]) != TargetIn.end()){
 		Gate en_Input;
 		en_Input.out = g.in[0];
 		en_Input.gate_name = g.in[0];
@@ -453,7 +460,7 @@ void Encoder::EncodeNAND(Gate g){
 		en_Input.out = g.in[1];
 		en_Input.gate_name = g.in[1];
 		AddEncoder(en_Input);
-	}
+	}*/
 
 	nand0.gate_type = AND_GATE;
 	nand0.gate_name = g.gate_name + "_0";
@@ -483,7 +490,7 @@ void Encoder::EncodeNOR(Gate g){
 	Gate nor1, nor0;
 	
 	EncodeConstantInput(g);
-	if(find(TargetIn.begin(), TargetIn.end(), g.in[0]) != TargetIn.end()){
+	/*if(find(TargetIn.begin(), TargetIn.end(), g.in[0]) != TargetIn.end()){
 		Gate en_Input;
 		en_Input.out = g.in[0];
 		en_Input.gate_name = g.in[0];
@@ -495,7 +502,7 @@ void Encoder::EncodeNOR(Gate g){
 		en_Input.out = g.in[1];
 		en_Input.gate_name = g.in[1];
 		AddEncoder(en_Input);
-	}
+	}*/
 
 	nor0.gate_type = OR_GATE;
 	nor0.gate_name = g.gate_name + "_0";
@@ -538,12 +545,12 @@ void Encoder::EncodeNOT(Gate g){
 		in00 = g.in[0] + "_0";
 	}
 			
-	if(find(TargetIn.begin(), TargetIn.end(), g.in[0]) != TargetIn.end()){
+	/*if(find(TargetIn.begin(), TargetIn.end(), g.in[0]) != TargetIn.end()){
 		Gate en_Input;
 		en_Input.out = g.in[0];
 		en_Input.gate_name = g.in[0];
 		AddEncoder(en_Input);
-	}
+	}*/
 	
 	buf1.gate_type = BUF_GATE;
 	buf1.gate_name = g.gate_name + "_1";
@@ -584,12 +591,12 @@ void Encoder::EncodeBUF(Gate g){
 		in01 = g.in[0] + "_1";
 		in00 = g.in[0] + "_0";
 	}
-	if(find(TargetIn.begin(), TargetIn.end(), g.in[0]) != TargetIn.end()){
+	/*if(find(TargetIn.begin(), TargetIn.end(), g.in[0]) != TargetIn.end()){
 		Gate en_Input;
 		en_Input.out = g.in[0];
 		en_Input.gate_name = g.in[0];
 		AddEncoder(en_Input);
-	}
+	}*/
 	
 	buf0.gate_type = BUF_GATE;
 	buf0.gate_name = g.gate_name + "_0";
@@ -618,7 +625,7 @@ void Encoder::EncodeXOR(Gate g){
 	Gate or0, or1;
 	
 	EncodeConstantInput(g);
-	if(find(TargetIn.begin(), TargetIn.end(), g.in[0]) != TargetIn.end()){
+	/*if(find(TargetIn.begin(), TargetIn.end(), g.in[0]) != TargetIn.end()){
 		Gate en_Input;
 		en_Input.out = g.in[0];
 		en_Input.gate_name = g.in[0];
@@ -630,7 +637,7 @@ void Encoder::EncodeXOR(Gate g){
 		en_Input.out = g.in[1];
 		en_Input.gate_name = g.in[1];
 		AddEncoder(en_Input);
-	}
+	}*/
 
 	and00.gate_type = AND_GATE;
 	and00.gate_name = g.gate_name + "_and00";
@@ -693,7 +700,7 @@ void Encoder::EncodeXNOR(Gate g){
 	Gate or0, or1;
 	
 	EncodeConstantInput(g);
-	if(find(TargetIn.begin(), TargetIn.end(), g.in[0]) != TargetIn.end()){
+	/*if(find(TargetIn.begin(), TargetIn.end(), g.in[0]) != TargetIn.end()){
 		Gate en_Input;
 		en_Input.out = g.in[0];
 		en_Input.gate_name = g.in[0];
@@ -705,7 +712,7 @@ void Encoder::EncodeXNOR(Gate g){
 		en_Input.out = g.in[1];
 		en_Input.gate_name = g.in[1];
 		AddEncoder(en_Input);
-	}
+	}*/
 
 	
 	and10.gate_type = AND_GATE;
@@ -767,7 +774,7 @@ void Encoder::EncodeDC(Gate g){
 	Gate and1, and0;
 	
 	EncodeConstantInput(g);
-	if(find(TargetIn.begin(), TargetIn.end(), g.in[0]) != TargetIn.end()){
+	/*if(find(TargetIn.begin(), TargetIn.end(), g.in[0]) != TargetIn.end()){
 		Gate en_Input;
 		en_Input.out = g.in[0];
 		en_Input.gate_name = g.in[0];
@@ -779,7 +786,7 @@ void Encoder::EncodeDC(Gate g){
 		en_Input.out = g.in[1];
 		en_Input.gate_name = g.in[1];
 		AddEncoder(en_Input);
-	}
+	}*/
 
 	and1.gate_type = AND_GATE;
 	and1.gate_name = g.gate_name + "_1";
