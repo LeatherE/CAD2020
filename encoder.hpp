@@ -40,6 +40,7 @@ class Encoder {
 	void EncodeXNOR(Gate g);
 	void EncodeDC(Gate g);
 	void EncodeMUX(Gate g);
+	void TransferMUX(Gate g);
 };
 
 

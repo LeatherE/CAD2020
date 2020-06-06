@@ -232,6 +232,8 @@ Gate Circuit::ReadNextGate(){
 	char c;
 	int i = 0;
 	
+	//int error = 0;
+	
 	g.XGate = false;
 	//cin>>tmp;
 	if (tmp == "and")
@@ -257,6 +259,10 @@ Gate Circuit::ReadNextGate(){
 	}
 	else if (tmp == "_HMUX")
 		g.gate_type = MUX_GATE;
+	/*else{
+		cout<<tmp<<endl;
+		error = 1;
+	}*/	
 	
 	
 	tmp.clear();
@@ -264,6 +270,8 @@ Gate Circuit::ReadNextGate(){
 		c = cin.get();
 		if(c == '('){
 			g.gate_name = tmp;
+			//if(error)
+			//	cout<<tmp<<endl;
 			break;
 		}else if(c != ' '){
 			tmp.push_back(c);
@@ -276,6 +284,8 @@ Gate Circuit::ReadNextGate(){
 		c = cin.get();
 		if(c == ','){
 			g.out = tmp;
+			//if(error)
+			//	cout<<"00"<<tmp<<"11"<<endl;
 			break;
 		}else if(c != ' '){
 			tmp.push_back(c);
@@ -293,7 +303,8 @@ Gate Circuit::ReadNextGate(){
 				num_of_xgate++;
 			}
 			g.in.push_back(tmp);
-			//cout<<tmp<<endl;
+			//if(error)
+			//	cout<<"00"<<tmp<<"11"<<endl;
 			tmp.clear();
 		}else if(c != ' '){
 			tmp.push_back(c);

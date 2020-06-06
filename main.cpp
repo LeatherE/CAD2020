@@ -18,13 +18,12 @@ int main(){
 	c.ReadOutList();
 	c.ReadWireList();
 	c.ReadGateList();
-	
+	//c.FindRepeat();
 	c.BuildAdjList();
 	//c.PrintCircuit();
 	c.topsort_Call();
 	
 	Encoder e(c.GetInList(), c.GetOutList(), c.GetGateList(), c.first_xgate, c.top_order);
-
 	e.EncodeCircuit();
 	e.PrintResult();
 	return 0;

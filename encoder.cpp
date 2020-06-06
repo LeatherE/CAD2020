@@ -34,7 +34,11 @@ void Encoder::EncodeCircuit(){
 	
 	for(i = 0; i < XFlag ; i++){
 		g = TargetGate[top_order[i]];
-		ResultGate.push_back(g);
+		
+		if(g.gate_type == MUX_GATE)
+			TransferMUX(g);
+		else
+			ResultGate.push_back(g);
 
 		if(find(TargetOut.begin(), TargetOut.end(), g.out) != TargetOut.end()){
 			ResultOut.push_back(g.out);
@@ -801,7 +805,7 @@ void Encoder::EncodeDC(Gate g){
 	and0.out = g.out + "_0";
 	ResultWire.push_back(and0.out);
 	and0.in.push_back(in00);   //c0
-	and0.in.push_back(in01);   //c1
+	and0.in.push_back(in10);   //d0
 	ResultGate.push_back(and0);
 
 	if(find(TargetOut.begin(), TargetOut.end(), g.out) != TargetOut.end()){
@@ -944,3 +948,44 @@ void Encoder::EncodeMUX(Gate g){
 		ResultWire.push_back(or01.out);
 	}
 }
+
+void Encoder::TransferMUX(Gate g){
+	Gate or0, not0, and1, and0;
+
+	not0.gate_type = NOT_GATE;			// ~S
+	not0.gate_name = g.gate_name + "_mux_n";
+	not0.out = g.out + "_not_s";
+	not0.in.push_back(g.in[2]);		// S
+	ResultWire.push_back(not0.out);
+	ResultGate.push_back(not0);
+	
+	and1.gate_type = AND_GATE;				//(~S&I0)
+	and1.gate_name = g.gate_name + "_and_1";
+	and1.out = g.out + "_and_1";
+	and1.in.push_back(g.in[0]);   	//I0
+	and1.in.push_back(not0.out);   	//~S
+	ResultWire.push_back(and1.out);
+	ResultGate.push_back(and1);
+		
+	and0.gate_type = AND_GATE;				// (S&I1)
+	and0.gate_name = g.gate_name + "_and_0";
+	and0.out = g.out + "_and_0";
+	and0.in.push_back(g.in[1]);  	//I1
+	and0.in.push_back(g.in[2]);  	//S
+	ResultWire.push_back(and0.out);
+	ResultGate.push_back(and0);
+
+	or0.gate_type = OR_GATE;				// (~S&I0)+(S&I1)
+	or0.gate_name = g.gate_name + "_or_0";
+	or0.out = g.out + "_or_0";
+	or0.in.push_back(and0.out);  	// (S&I1)
+	or0.in.push_back(and1.out);  	// (~S&I0)
+	ResultGate.push_back(or0);
+	
+	
+	if(find(TargetOut.begin(), TargetOut.end(), g.out) != TargetOut.end()){
+		ResultOut.push_back(or0.out);
+	}else{
+		ResultWire.push_back(or0.out);
+	}
+}	
