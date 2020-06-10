@@ -6,6 +6,8 @@ using namespace std;
 #include <sstream>
 #include <algorithm>
 
+//test
+
 Encoder::Encoder(vector<string> Tinput, vector<string> Toutput, vector<Gate> Tgate, int first_xgate, int *T_top_order){
 	TargetIn = Tinput;
 	TargetOut = Toutput;
