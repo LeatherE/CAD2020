@@ -1,0 +1,8 @@
+
+read_verilog miter.v
+
+strash
+
+sat
+
+write_cex -n out.txt

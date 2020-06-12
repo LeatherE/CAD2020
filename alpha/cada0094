@@ -1,0 +1,8 @@
+#!/bin/bash
+./encoder < $1 > encode_g.v
+./encoder < $2 > encode_r.v
+cat encode_g.v encode_r.v > tmp.v
+./miter < tmp.v > miter.v
+rm out.txt
+./abc < abc_step.txt
+./result > $3
