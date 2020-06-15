@@ -11,7 +11,7 @@ Encoder::Encoder(vector<string> Tinput, vector<string> Toutput, vector<Gate> Tga
 	TargetIn = Tinput;
 	TargetOut = Toutput;
 	TargetGate = Tgate;
-	XFlag = first_xgate;
+	XFlag = 0;
 	top_order = T_top_order;
 }
 
@@ -32,7 +32,7 @@ void Encoder::EncodeCircuit(){
 			
 		}
 	}
-	
+	/*
 	for(i = 0; i < XFlag ; i++){
 		g = TargetGate[top_order[i]];
 		
@@ -58,7 +58,7 @@ void Encoder::EncodeCircuit(){
 				break;
 			}	
 		}	
-	}
+	}*/
 	for(i = XFlag; i < TargetGate.size(); i++){
 		g = TargetGate[top_order[i]];
 		switch(g.gate_type){
