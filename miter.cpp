@@ -28,11 +28,6 @@ void Miter::PrintResult(){
 		if(j%7 == 6)
 			cout<<endl;
 	}
-	/*for(i = 0; i < ResultOut.size()-1; i++, j++){
-		cout<<ResultOut[i]<<" , ";
-		if(j%7 == 6)
-			cout<<endl;
-	}*/
 	cout<<"PO );"<<endl;
 	
 	cout<<"input ";
@@ -44,15 +39,6 @@ void Miter::PrintResult(){
 	cout<<GoldenIn.back()<<" ;"<<endl;
 	
 	cout<<"output PO;"<<endl;
-	/*if(ResultOut.size()>0){
-		for(i = 0; i < ResultOut.size()-1; i++){
-			cout<<ResultOut[i]<<" , ";
-			if(i%7 == 6)
-				cout<<endl;
-		}
-		cout<<ResultOut.back();
-	}
-	cout<<" ;"<<endl;*/
 	
 	cout<<"wire ";
 	if(ResultWire.size()>0){
@@ -100,8 +86,7 @@ void Miter::PrintResult(){
 		cout<<ResultGate[i].in.back()<<" );"<<endl;
 	}
 	cout<<endl;
-	
-	cout<<"or ( "<<PO.out<<" , ";
+	cout<<"or ( PO , ";
 	for(j = 0; j < PO.in.size() - 1; j++){
 		cout<<PO.in[j]<<" , ";
 	}
@@ -309,11 +294,11 @@ void Miter::FindOutput(){
 					AddMiter4(s, RevisedOut[j]);
 				break;
 			} else if(s[s.size()-2] == '_' && s[s.size()-1] == '1'){
-				if(s.compare(0, s.size()-2, RevisedOut[j]) == 0){
+				if(s.substr(0, s.size()-2).compare(RevisedOut[j]) == 0){
 					AddMiter2(s, GoldenOut[++i], RevisedOut[j]);
 					break;
 				}	
-			} else if(s.compare(0, RevisedOut[j].size()-2, RevisedOut[j]) == 0){
+			} else if(s.compare(0, s.size(), RevisedOut[j].substr(0, s.size())) == 0){
 				AddMiter3(s, RevisedOut[j], RevisedOut[j+1]);
 				break;
 			}
@@ -523,45 +508,18 @@ void Miter::AddMiter3(string g, string r1, string r0){
 }
 
 void Miter::AddMiter4(string g, string r){
-	Gate and1, and0, or0, not1, not0;
+	Gate and1, and0, or0, not1, not0, xor0;
 	string s;
 	
 	//ResultWire.push_back(g);
 	//ResultWire.push_back(r);
 
-	not1.gate_type = NOT_GATE;
-	not1.out = r + "_n";
-	not1.in.push_back(r + "_r");
-	ResultWire.push_back(not1.out);
-	ResultGate.push_back(not1);
-	
-	not0.gate_type = NOT_GATE;
-	not0.out = g + "_n";
-	not0.in.push_back(g + "_g");
-	ResultWire.push_back(not0.out);
-	ResultGate.push_back(not0);
-
-	and1.gate_type = AND_GATE;
-	and1.out = g + "_n_and";
-	and1.in.push_back(r + "_r");
-	and1.in.push_back(not0.out);
-	ResultWire.push_back(and1.out);
-	ResultGate.push_back(and1);
-
-	and0.gate_type = AND_GATE;
-	and0.out = r + "_n_and";
-	and0.in.push_back(g + "_g");
-	and0.in.push_back(not1.out);
-	ResultWire.push_back(and0.out);
-	ResultGate.push_back(and0);
-	
 	s = to_string(count++);
-	
-	or0.gate_type = OR_GATE;
-	or0.out = "Miter_" + s;
-	or0.in.push_back(and0.out);
-	or0.in.push_back(and1.out);
-	ResultGate.push_back(or0);
-	ResultWire.push_back(or0.out);
-	PO.in.push_back(or0.out);
+	xor0.gate_type = XOR_GATE;
+	xor0.out = "Miter_" + s;
+	xor0.in.push_back(r + "_r");
+	xor0.in.push_back(g + "_g");
+	ResultWire.push_back(xor0.out);
+	PO.in.push_back(xor0.out);
+	ResultGate.push_back(xor0);
 }
