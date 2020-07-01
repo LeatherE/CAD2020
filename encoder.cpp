@@ -6,59 +6,51 @@ using namespace std;
 #include <sstream>
 #include <algorithm>
 
-
 Encoder::Encoder(vector<string> Tinput, vector<string> Toutput, vector<Gate> Tgate, int first_xgate, int *T_top_order){
 	TargetIn = Tinput;
 	TargetOut = Toutput;
 	TargetGate = Tgate;
-	XFlag = 0;
+	XFlag = first_xgate;
 	top_order = T_top_order;
 }
 
 void Encoder::EncodeCircuit(){
 	int i, j, k;
 	Gate g, g_tmp;
+	Gate en_Input;
 	
 	for(i = 0; i < TargetIn.size(); i++){
-		for(j = XFlag; j < TargetGate.size(); j++){
-			g = TargetGate[top_order[j]];
-			if(find(g.in.begin(), g.in.end(), TargetIn[i]) != g.in.end()){
-				Gate en_Input;
-				en_Input.out = TargetIn[i];
-				en_Input.gate_name = TargetIn[i];
-				AddEncoder(en_Input);
-				break;
-			}
-			
-		}
+		en_Input.out = TargetIn[i];
+		en_Input.gate_name = TargetIn[i];
+		AddEncoder(en_Input);
 	}
-	/*
+	
 	for(i = 0; i < XFlag ; i++){
 		g = TargetGate[top_order[i]];
 		
 		if(g.gate_type == MUX_GATE)
 			TransferMUX(g);
-		else
+		else {
 			ResultGate.push_back(g);
-
-		if(find(TargetOut.begin(), TargetOut.end(), g.out) != TargetOut.end()){
-			ResultOut.push_back(g.out);
-		}else{
-			ResultWire.push_back(g.out);
+			if(find(TargetOut.begin(), TargetOut.end(), g.out) != TargetOut.end()){
+				ResultOut.push_back(g.out);
+			}else{
+				ResultWire.push_back(g.out);
+			}	
 		}
 
+
 		for(j = 0; j < g.fout.size(); j++){	// add encoder before encoded gate
-			g_tmp = TargetGate[g.fout[j]];
 			for(k = 0; k < TargetGate.size(); k++){
 				if(top_order[k] == g.fout[j])
 					break;
 			}
 			if(k >= XFlag){			// if g_tmp's top_order >= Xflag
-				AddEncoder(g);		// problem here	
+				AddEncoder(g);
 				break;
 			}	
 		}	
-	}*/
+	}
 	for(i = XFlag; i < TargetGate.size(); i++){
 		g = TargetGate[top_order[i]];
 		switch(g.gate_type){
@@ -76,13 +68,13 @@ void Encoder::EncodeCircuit(){
 				break;
 			case NAND_GATE:
 				if(g.in.size()>2)
-					EncodeMultiInput(g);
+					EncodeMultiInput(g);		// bug here
 				else
 					EncodeNAND(g);
 				break;
 			case NOR_GATE:
 				if(g.in.size()>2)
-					EncodeMultiInput(g);
+					EncodeMultiInput(g);		// bug here
 				else
 					EncodeNOR(g);
 				break;
@@ -94,13 +86,13 @@ void Encoder::EncodeCircuit(){
 				break;
 			case XOR_GATE:
 				if(g.in.size()>2)
-					EncodeMultiInput(g);
+					EncodeMultiInput(g);		
 				else
 					EncodeXOR(g);
 				break;
 			case XNOR_GATE:
 				if(g.in.size()>2)
-					EncodeMultiInput(g);
+					EncodeMultiInput(g);		// bug here
 				else
 					EncodeXNOR(g);
 				break;
@@ -187,7 +179,6 @@ void Encoder::PrintResult(){
 				cout<<"xnor ";
 				break;
 		}
-		//cout<<ResultGate[i].gate_name<<" ";
 		cout<<"( "<<ResultGate[i].out<<" , ";
 		for(j = 0; j < ResultGate[i].in.size() - 1; j++){
 			cout<<ResultGate[i].in[j]<<" , ";
@@ -219,13 +210,15 @@ void Encoder::AddEncoder(Gate g){
 }
 
 void Encoder::EncodeMultiInput(Gate g){
-	Gate new_gate;
+	
+	Gate end;
 	string s;
 	int i = 1;
 	
 	switch(g.gate_type){
 		case AND_GATE:
 			while(g.in.size() >= 2){
+				Gate new_gate;
 				s = to_string(i++);
 				new_gate.gate_type = AND_GATE;
 				new_gate.gate_name = g.gate_name + "_" + s;
@@ -233,7 +226,6 @@ void Encoder::EncodeMultiInput(Gate g){
 					new_gate.out = g.out;
 				else
 					new_gate.out = g.out + "_w" + s;
-				ResultWire.push_back(new_gate.out);
 				new_gate.in.push_back(g.in.back());
 				g.in.pop_back();
 				new_gate.in.push_back(g.in.back());
@@ -244,6 +236,7 @@ void Encoder::EncodeMultiInput(Gate g){
 			break;
 		case OR_GATE:
 			while(g.in.size() >= 2){
+				Gate new_gate;
 				s = to_string(i++);
 				new_gate.gate_type = OR_GATE;
 				new_gate.gate_name = g.gate_name + "_" + s;
@@ -251,7 +244,6 @@ void Encoder::EncodeMultiInput(Gate g){
 					new_gate.out = g.out;
 				else
 					new_gate.out = g.out + "_w" + s;
-				ResultWire.push_back(new_gate.out);
 				new_gate.in.push_back(g.in.back());
 				g.in.pop_back();
 				new_gate.in.push_back(g.in.back());
@@ -261,43 +253,53 @@ void Encoder::EncodeMultiInput(Gate g){
 			}
 			break;
 		case NAND_GATE:
-			while(g.in.size() >= 2){
+			while(g.in.size() > 2){
+				Gate new_gate;
 				s = to_string(i++);
-				new_gate.gate_type = NAND_GATE;
+				new_gate.gate_type = AND_GATE;
 				new_gate.gate_name = g.gate_name + "_" + s;
-				if(g.in.size() == 2)
-					new_gate.out = g.out;
-				else
-					new_gate.out = g.out + "_w" + s;
-				ResultWire.push_back(new_gate.out);
+				new_gate.out = g.out + "_w" + s;
 				new_gate.in.push_back(g.in.back());
 				g.in.pop_back();
 				new_gate.in.push_back(g.in.back());
 				g.in.pop_back();
 				g.in.push_back(new_gate.out);
-				EncodeNAND(new_gate);
+				EncodeAND(new_gate);
 			}
+			
+			end.gate_type = NAND_GATE;
+			end.out = g.out;
+			end.in.push_back(g.in.back());
+			g.in.pop_back();
+			end.in.push_back(g.in.back());
+			g.in.pop_back();
+			EncodeNAND(end);
 			break;
 		case NOR_GATE:
-			while(g.in.size() >= 2){
+			while(g.in.size() > 2){
+				Gate new_gate;
 				s = to_string(i++);
-				new_gate.gate_type = NOR_GATE;
+				new_gate.gate_type = OR_GATE;
 				new_gate.gate_name = g.gate_name + "_" + s;
-				if(g.in.size() == 2)
-					new_gate.out = g.out;
-				else
-					new_gate.out = g.out + "_w" + s;
-				ResultWire.push_back(new_gate.out);
+				new_gate.out = g.out + "_w" + s;
 				new_gate.in.push_back(g.in.back());
 				g.in.pop_back();
 				new_gate.in.push_back(g.in.back());
 				g.in.pop_back();
 				g.in.push_back(new_gate.out);
-				EncodeNOR(new_gate);
+				EncodeOR(new_gate);
 			}
+			end.gate_type = NOR_GATE;
+			end.out = g.out;
+			end.in.push_back(g.in.back());
+			g.in.pop_back();
+			end.in.push_back(g.in.back());
+			g.in.pop_back();
+			EncodeNOR(end);
 			break;
 		case XOR_GATE:
 			while(g.in.size() >= 2){
+				Gate new_gate;
 				s = to_string(i++);
 				new_gate.gate_type = XOR_GATE;
 				new_gate.gate_name = g.gate_name + "_" + s;
@@ -305,7 +307,6 @@ void Encoder::EncodeMultiInput(Gate g){
 					new_gate.out = g.out;
 				else
 					new_gate.out = g.out + "_w" + s;
-				ResultWire.push_back(new_gate.out);
 				new_gate.in.push_back(g.in.back());
 				g.in.pop_back();
 				new_gate.in.push_back(g.in.back());
@@ -315,22 +316,26 @@ void Encoder::EncodeMultiInput(Gate g){
 			}
 			break;
 		case XNOR_GATE:
-			while(g.in.size() >= 2){
+			while(g.in.size() > 2){
+				Gate new_gate;
 				s = to_string(i++);
-				new_gate.gate_type = XNOR_GATE;
+				new_gate.gate_type = XOR_GATE;
 				new_gate.gate_name = g.gate_name + "_" + s;
-				if(g.in.size() == 2)
-					new_gate.out = g.out;
-				else
-					new_gate.out = g.out + "_w" + s;
-				ResultWire.push_back(new_gate.out);
+				new_gate.out = g.out + "_w" + s;
 				new_gate.in.push_back(g.in.back());
 				g.in.pop_back();
 				new_gate.in.push_back(g.in.back());
 				g.in.pop_back();
 				g.in.push_back(new_gate.out);
-				EncodeXNOR(new_gate);
+				EncodeXOR(new_gate);
 			}
+			end.gate_type = XNOR_GATE;
+			end.out = g.out;
+			end.in.push_back(g.in.back());
+			g.in.pop_back();
+			end.in.push_back(g.in.back());
+			g.in.pop_back();
+			EncodeXNOR(end);
 			break;
 	}
 }
@@ -978,7 +983,7 @@ void Encoder::TransferMUX(Gate g){
 
 	or0.gate_type = OR_GATE;				// (~S&I0)+(S&I1)
 	or0.gate_name = g.gate_name + "_or_0";
-	or0.out = g.out + "_or_0";
+	or0.out = g.out;
 	or0.in.push_back(and0.out);  	// (S&I1)
 	or0.in.push_back(and1.out);  	// (~S&I0)
 	ResultGate.push_back(or0);
