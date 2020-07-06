@@ -1,0 +1,6 @@
+#!/bin/bash
+g++ main.cpp parser.cpp encoder.cpp miter.cpp
+./a.out $1 $2 > miter.v
+rm out.txt
+./abc < abc_step.txt
+./result > $3
