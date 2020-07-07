@@ -2,4 +2,4 @@
 ./encoder $1 $2 > miter.v
 rm out.txt
 ./abc < abc_step.txt
-./result > $3
+./result < miter.v > $3
