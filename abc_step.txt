@@ -1,0 +1,7 @@
+
+read_verilog miter.v
+strash
+balance
+sat -C 700000
+write_cex -n out.txt
+quit
