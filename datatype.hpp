@@ -48,7 +48,7 @@ void CreateGate(Circuit &pNtk, vector<string> &gate_info);
 void BuildAdjList(Circuit &pNtk);
 void topsort_Call(Circuit &pNtk);
 void top_sort(Circuit &pNtk, int v);
-void PrintCircuit(Circuit &pNtk);
+void PrintCircuit(Circuit &c);
 
 void EncodeCircuit(Circuit &encoded, Circuit &target);
 void AddEncoder(Circuit &encoded, Gate &g);

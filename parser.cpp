@@ -243,7 +243,7 @@ void top_sort(Circuit &pNtk, int v){
 	pNtk.top_order[pNtk.top_index--] = v;
 }
 
-void PrintCircuit(Circuit &pNtk){
+void PrintCircuit(Circuit &c){
 	int i, j;
 	cout<<"module top( ";
 	j = 0;

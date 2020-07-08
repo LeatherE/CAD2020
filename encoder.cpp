@@ -15,6 +15,83 @@
 
 using namespace std; 
 
+void EncodeCircuit(Circuit &encoded, Circuit &target){
+
+	int i, j, k;
+	Gate g;
+	Gate en_Input;
+	
+	for(i = 0; i < target.InList.size(); i++){
+		encoded.InList.push_back(target.InList[i]);
+		en_Input.out = target.InList[i];
+		en_Input.gate_name = target.InList[i];
+		AddEncoder(encoded, en_Input);
+	}
+	
+	for(i = 0; i < target.first_xgate ; i++){
+		g = target.GateList[target.top_order[i]];
+		
+		if(g.gate_type == MUX_GATE)
+			TransferMUX(encoded, g, target);
+		else {
+			encoded.GateList.push_back(g);
+			if(find(target.OutList.begin(), target.OutList.end(), g.out) != target.OutList.end()){
+				encoded.OutList.push_back(g.out);
+			}else{
+				encoded.WireList.push_back(g.out);
+			}	
+		}
+
+
+		for(j = 0; j < g.fout.size(); j++){	// add encoder before encoded gate
+			for(k = 0; k < target.GateList.size(); k++){
+				if(target.top_order[k] == g.fout[j])
+					break;
+			}
+			if(k >= target.first_xgate){
+				AddEncoder(encoded, g);
+				break;
+			}	
+		}	
+	}
+	for(i = target.first_xgate; i < target.GateList.size(); i++){
+		g = target.GateList[target.top_order[i]];
+		switch(g.gate_type){
+			case AND_GATE:
+				EncodeAND(encoded, g, target);
+				break;
+			case OR_GATE:
+				EncodeOR(encoded, g, target);
+				break;
+			case NAND_GATE:
+				EncodeNAND(encoded, g, target);
+				break;
+			case NOR_GATE:
+				EncodeNOR(encoded, g, target);
+				break;
+			case NOT_GATE:
+				EncodeNOT(encoded, g, target);
+				break;
+			case BUF_GATE:
+				EncodeBUF(encoded, g, target);
+				break;
+			case XOR_GATE:
+				EncodeXOR(encoded, g, target);
+				break;
+			case XNOR_GATE:
+				EncodeXNOR(encoded, g, target);
+				break;
+			case DC_GATE:
+				EncodeDC(encoded, g, target);
+				break;
+			case MUX_GATE:
+				EncodeMUX(encoded, g, target);
+				break;
+		}	
+	}
+
+}
+
 void AddEncoder(Circuit &encoded, Gate &g){
 	string encoder_out1, encoder_out0;
 	Gate encode_not, encode_buf;
