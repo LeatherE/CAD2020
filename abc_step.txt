@@ -1,6 +1,5 @@
 read_verilog miter.v
-strash
-balance
+rwsat
 sat -C 700000
 write_cex out.txt
 quit
