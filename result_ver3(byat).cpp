@@ -18,7 +18,7 @@ void Output_ans(){
     char sat[4];
     int num;
 	FILE * fp;
-    if((fp=fopen("sat_out.txt","r"))==NULL){
+    if((fp=fopen("out.txt","r"))==NULL){
           printf("open file error!!\n");
     }
     fscanf(fp,"%s\n",sat);
