@@ -1,0 +1,4 @@
+read_verilog miter.v
+rwsat
+write_cnf miter.cnf
+quit

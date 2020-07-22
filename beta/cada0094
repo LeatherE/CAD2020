@@ -1,0 +1,7 @@
+#!/bin/bash
+./guess_eq > $3 
+./encoder $1 $2 > miter.v
+rm sat_result.txt
+./abc < abc_cnf.txt
+./cadical -q miter.cnf > sat_result.txt
+./result miter.v sat_result.txt > $3
